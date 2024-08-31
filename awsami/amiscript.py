@@ -1,7 +1,7 @@
-#Python script used to get a list of my AMI's in boto3 and save themn to a csv files with speficied columns
+#Python script used to get a list of my AMI's in boto3 and save themn to a csv file with speficied columns
 import boto3
 import csv
-#opening a session with ec2
+#opening a session with ec2 client
 ec2 = boto3.client('ec2')
 #putting the list of images of our aws ["self"] account into the response variable
 response = ec2.describe_images(Owners=['self'])
