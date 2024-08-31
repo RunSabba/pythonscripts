@@ -13,8 +13,8 @@ This repository contains a series of Python scripts that interact with AWS servi
 
 ## 🛠️ Scripts Included
 
-- **`list_amis.py`**: Exports a list of AMIs in your AWS account to a CSV file.
-- **`deregister_amis.py`**: Deregisters AMIs and deletes associated snapshots from a CSV file.
+- **`amiscript.py`**: Exports a list of AMIs in your AWS account to a CSV file.
+- **`ami_delete.py`**: Deregisters AMIs and deletes associated snapshots from a CSV file.
 
 ## 🚀 Getting Started
 
