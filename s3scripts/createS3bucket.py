@@ -1,5 +1,5 @@
 import boto3
-#using ressource to create the bucket, and naming the bucket using the bucket variable.
+#using ressource to create the bucket thru API call using bot03.
 s3 = boto3.resource('s3')
 #creating this loop to ensure We can get a unique bucket name and not break out until the user inputs one.
 while True:
@@ -14,8 +14,5 @@ while True:
         print (f" The {bucket} bucket has been successfully created. " )
         break
     else:
-        print (f" The {bucket} bucket name already exists, Please create a unique bucket name.. ")    
-
-
-
+        print (f" The {bucket} bucket name already exists, Please create a unique bucket name. ")    
 
