@@ -16,18 +16,17 @@ def stop_all_instances():
 
 def stop_cloudops_instances():
 #This will filter out my prod servers by tags to shut off specific servers upon command.
-#square brackets around running becuase python expects a list format unlike tags
     team_name = "Runsabba-CloudOps"
-    prod_filter = {"Name": "tag:Owner", "Values":[team_name]}
-    instances = list(ec2_instance.instances.filter(Filters=[prod_filter]))
+    tag_filter = {"Name": "tag:Owner", "Values":[team_name]}
+    instances = list(ec2_instance.instances.filter(Filters=[tag_filter]))
 #updated loop to catch errors and to also added else block to inform us if theres no ec2's to delete(no match in Filter)
     if instances:
         for instance in instances:
             try:
-                instances.terminate()
-                print(f"Stopping CloudOps Instance: {instances.id} ")
+                instance.stop()
+                print(f"Stopping CloudOps Instance: {instance.id} ")
             except Exception as e:
-                print(f"Error stopping instance {instances.id}")
+                print(f"Error stopping instance {instance.id}: {e}")#if error occurs the mesasage will be stored in "e" as a variable"
     else:
         print(f"There are no ec2's to delete for {team_name} ")
 
