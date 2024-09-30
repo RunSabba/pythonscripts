@@ -4,29 +4,31 @@ from datetime import datetime, timedelta, timezone
 region = "us-east-1"
 ec2 = boto3.resource('ec2',region_name=region)
 cloudwatch = boto3.client('cloudwatch', region_name=region)
+sns = boto3.resource('sns',region_name=region )
 
+#
 def list_instances_and_metrics():
     instance_filter = {"Name":"instance-state-name", "Values": ["running"]}
-    instances = list(ec2.instances.filter(Filters=[instance_filter]))
+    instances = list(ec2.instances.filter(Filters=[instance_filter])) #listing instances that meet the instance_filter criteria
     if instances:
         for instance in instances:
             try:
                 print(f"\nEC2 instance: {instance.id} is running in {region} region.")
-                get_cpu_utilization(instance)
+                get_cpu_utilization(instance)#will grab from the function below
             except Exception as e:
                 print(f"Unable to poll the {instance.id} instance in the {region} region. {e}")
     else:
         print(f" No EC2 instances are running in the {region} region.")
 
 
-def get_cpu_utilization(instance):
+def get_cpu_utilization(instance):#all the variables are set by boto3. think of it as terraform resource inputs. 
     cpu_stats = cloudwatch.get_metric_statistics(
         Namespace='AWS/EC2',
         MetricName = 'CPUUtilization',
         Dimensions = [{'Name': 'InstanceId', 'Value': instance.id}],
-        StartTime = datetime.now(timezone.utc) - timedelta(minutes=10),
+        StartTime = datetime.now(timezone.utc) - timedelta(minutes=3),
         EndTime = datetime.now(timezone.utc),
-        Period = 60,
+        Period = 300,
         Statistics = ['Average']
     )
 
@@ -39,6 +41,14 @@ def get_cpu_utilization(instance):
         print(f"No CPU Utilization stats available for {instance.id} at the moment.") 
 
 def ec2_high_util_alert(instance_id,average_cpu):
+    topic = sns.Topic('arn:aws:sns:us-east-1:273515636980:ec2-threshold')
+    message = (f"CLOUDWATCH ALERT: Instance {instance_id} is currently using {average_cpu} CPU, which exceeds the threshold set.")
+
+    response = topic.publish(
+        Message=message,
+        Subject="High CPU Utilization Alert!")
+
+
     print(f"CLOUDWATCH ALERT: Instance {instance_id} is currently using {average_cpu} CPU, which exceeds the threshold set.")
     #complete the rest of the sns topic tomorrow.
 
